@@ -3,6 +3,12 @@
 #include <ArduinoJson.h>
 #include <AsyncMqttClient.h>
 
+// FOR OTA UPDATE
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncElegantOTA.h>
+
+AsyncWebServer OTAserver(80);
 
 /**** Device data structure   ****/
 #define MAX_CLIENTS 20
@@ -32,7 +38,7 @@ const char* ssidAP     = "ESP32-Access-Point";
 const char* passwordAP = "123456789";
 
 // Set web server port number to 80
-WiFiServer server(80);
+WiFiServer server(88);
 /**** Access Point ****/
 
 int wifi_status = WL_IDLE_STATUS;     // the Wifi radio's status
@@ -50,9 +56,10 @@ AsyncMqttClient mqttClient;
 
 const char* leader_status_topic = "leader/lead/status";
 const char* leader_capability_topic = "leader/lead/capability";
+const char* leader_ip_topic = "leader/lead/ip";
 
-DynamicJsonDocument doc(6144); // JSONdocument where are deserialized dashboard requests
-char output[6144];
+DynamicJsonDocument doc(3000); // JSONdocument where are deserialized dashboard requests
+char output[3000];
 
 // Latency variable
 unsigned long send_time = 0;
@@ -137,13 +144,19 @@ void setup() {
   mqttClient.onConnect(onMqttConnect);
   mqttClient.onMessage(onMqttMessage);
   mqttClient.setWill(leader_status_topic, 0, true, "0");
- 
+
+  // Inizializza il server HTTP per gli OTA UPDATE
+  AsyncElegantOTA.begin(&OTAserver);    // Start ElegantOTA
+  OTAserver.begin();
+  Serial.println("HTTP server started");
+  Serial.println(WiFi.localIP());
+
 }
 
 void loop(){
   
   MQTT_connect();
-  
+  AsyncElegantOTA.loop();
   
   delay(5000);
   //offloadTaskPrimeNumber(200);
@@ -312,7 +325,6 @@ void onMqttConnect(bool sessionPresent) {
   vect_mult_cap = getVectorMultiplicationCapability();
 
   doc.clear();
-
   doc["prime_num"] = num_prime_cap;
   doc["word_count"] = word_count_cap;
   doc["vect_mult"] = vect_mult_cap;
@@ -322,6 +334,9 @@ void onMqttConnect(bool sessionPresent) {
   serializeJson(doc, output);
   packetIdSub = mqttClient.publish(leader_status_topic, 0, true, "1");
   packetIdSub = mqttClient.publish(leader_capability_topic, 0, true, output);
+  const char* ip = WiFi.localIP().toString().c_str();
+  packetIdSub = mqttClient.publish(leader_ip_topic, 0, true, ip);
+
 }
 
 // Funzione che inizializza l'array di clients
@@ -490,10 +505,10 @@ int getWordCountCapability(){
   unsigned long delta = 0;
   float num_sec=0;
   int res = 0;
-  const char* str = "Apart from counting words and characters, our online editor can help you to improve word choice and writing style, and, optionally, help you to detect grammar mistakes and plagiarism. To check word count, simply place your cursor into the text box above and start typing. You'll see the number of characters and words increase or decrease as you type, delete, and edit them. You can also copy and paste text from another program over into the online editor above. The Auto-Save feature will make sure you won't lose any changes while editing, even if you leave the site and come back later. Tip: Bookmark this page now.Knowing the word count of a text can be important. For example, if an author has to write a minimum or maximum amount of words for an article, essay, report, story, book, paper, you name it. WordCounter will help to make sure its word count reaches a specific requirement or stays within a certain limit.In addition, WordCounter shows you the top 10 keywords and keyword density of the article you're writing. This allows you to know which keywords you use how often and at what percentages. This can prevent you from over-using certain words or word combinations and check for best distribution of keywords in your writing.In the Details overview you can see the average speaking and reading time for your text, while Reading Level is an indicator of the education level a person would need in order to understand the words you’re using.Disclaimer: We strive to make our tools as accurate as possible but we cannot guarantee it will always be so. Apart from counting words and characters, our online editor can help you to improve word choice and writing style, and, optionally, help you to detect grammar mistakes and plagiarism. To check word count, simply place your cursor into the text box above and start typing. You'll see the number of characters and words increase or decrease as you type, delete, and edit them. You can also copy and paste text from another program over into the online editor above. The Auto-Save feature will make sure you won't lose any changes while editing, even if you leave the site and come back later. Tip: Bookmark this page now.Knowing the word count of a text can be important. For example, if an author has to write a minimum or maximum amount of words for an article, essay, report, story, book, paper, you name it. WordCounter will help to make sure its word count reaches a specific requirement or stays within a certain limit.In addition, WordCounter shows you the top 10 keywords and keyword density of the article you're writing. This allows you to know which keywords you use how often and at what percentages. This can prevent you from over-using certain words or word combinations and check for best distribution of keywords in your writing.In the Details overview you can see the average speaking and reading time for your text, while Reading Level is an indicator of the education level a person would need in order to understand the words you’re using.Disclaimer: We strive to make our tools as accurate as possible but we cannot guarantee it will always be so. Apart from counting words and characters, our online editor can help you to improve word choice and writing style, and, optionally, help you to detect grammar mistakes and plagiarism. To check word count, simply place your cursor into the text box above and start typing. You'll see the number of characters and words increase or decrease as you type, delete, and edit them. You can also copy and paste text from another program over into the online editor above. The Auto-Save feature will make sure you won't lose any changes while editing, even if you leave the site and come back later. Tip: Bookmark this page now.Knowing the word count of a text can be important. For example, if an author has to write a minimum or maximum amount of words for an article, essay, report, story, book, paper, you name it. WordCounter will help to make sure its word count reaches a specific requirement or stays within a certain limit.In addition, WordCounter shows you the top 10 keywords and keyword density of the article you're writing. This allows you to know which keywords you use how often and at what percentages. This can prevent you from over-using certain words or word combinations and check for best distribution of keywords in your writing. In the Details overview you can see the average speaking and reading time for your text, while Reading Level is an indicator of the education level a person would need in order to understand the words you’re using.Disclaimer: We strive to make our tools as accurate as possible but we cannot guarantee it will always be so. dsuisusdbuibd dsbusd dsidsbsd Apart from counting words and characters, our online editor can help you to improve word choice and writing style, and, optionally, help you to detect grammar mistakes and plagiarism. dsubi dsubidusb dsbdsiubdsasb sausad sdaisadi saiusabfuib fsabiusbfiusaf safusausa s";
+  const char* str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean fringilla venenatis nisi, vitae congue neque congue in. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque placerat efficitur felis, ut aliquet nisl dapibus non. Phasellus id purus velit. Pellentesque in nisl ut nulla dignissim congue. Praesent sed dolor metus. Vivamus id est vitae dolor vehicula efficitur. Mf dfbu fu sdi du sduibas yuv dyuvu davyuv ucatsyc sacy dvua dyvu dvsu ";
   for(int i=0; i<100; i++){
     start = micros();
-    res = getWordCount(str, 5000);    
+    res = getWordCount(str, 500);    
     endd = micros();
     delta = endd-start;
     num_sec = num_sec + delta;
@@ -679,8 +694,8 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   String formatted_payload = "";
   for (size_t i = 0; i < len; ++i)
     formatted_payload = formatted_payload + payload[i];
-
-  // Se il topic è fisso, che può essere "dashboard/task" oppure "clients/task/result"
+  
+  // Se il topic è fisso, che può essere "dashboard/task" oppure ""clients/task/result"
   if(strcmp(topic,"dashboard/task") == 0)
   {
     doc.clear();
@@ -740,6 +755,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       if(num_sec > word_count_cap)
       {
         offloadTaskWordCount(num_sec-word_count_cap,data);
+        Serial.println("NON CI RIESCO DA SOLO");
         for(int i=0; i<word_count_cap; i++)
           num = getWordCount(data,strlen(data));
       }
@@ -878,9 +894,9 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     String device_topic = getSubstring(topic_string, second_backslash+1, topic_string.length());
 
     // Aggiorno le informazioni del client
-    bool subscribe_state = SubscribeToCliensArray(device_id);
-    if(subscribe_state){
-      // se il topic è del tipo clients/dev1/state
+    bool subscribe_status = SubscribeToCliensArray(device_id);
+    if(subscribe_status){
+      // se il topic è del tipo clients/dev1/status
       if(device_topic.equals("status")){
         if(formatted_payload.equals("1"))
           updateDeviceState(true,device_id);
@@ -905,6 +921,6 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       }
     }
   }
-   
+  
   //printClientsArray();
 }
