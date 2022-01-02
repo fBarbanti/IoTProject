@@ -26,11 +26,14 @@ char output[3000];
 /**** Global variable ****/
 
 /**** Access Point ****/
-const char* ssidAP     = "ESP32-Access-Point";
+const char* ssidAP     = "ESP32AP";
 const char* passwordAP = "123456789";
+IPAddress ipAP = IPAddress (10, 10, 2, 6); 
+IPAddress gatewayAP = IPAddress (10, 10, 2, 6); 
+IPAddress nMaskAP = IPAddress (255, 255, 255, 0); 
 
-// Set web server port number to 80
-WiFiServer server(80);
+// Set web server port number to 88
+WiFiServer server(88);
 #define WIFI_DELAY 60
 /**** Access Point ****/
 
@@ -42,7 +45,8 @@ Preferences preferences;
 
 
 /**** MQTT ****/
-#define MQTT_HOST IPAddress(10, 126, 1, 27)
+//#define MQTT_HOST IPAddress(10, 126, 1, 27)
+IPAddress MQTT_HOST;
 #define MQTT_PORT 1883
 
 AsyncMqttClient mqttClient;
@@ -51,7 +55,7 @@ AsyncMqttClient mqttClient;
 
 /**** Function definition ****/
 void AccessPointOn();
-void parsePostRequest(String req);
+void parsePostRequest(String req, String &ssid, String &passwd, String &broker_ip);
 void MQTT_connect();
 void onMqttConnect(bool sessionPresent);
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
@@ -107,6 +111,10 @@ void setup() {
       Serial.println("Connesso al wifi con le credenziali in EEPROM");
   }
   
+  String eeprom_broker_ip = preferences.getString("broker_ip", "");
+  MQTT_HOST.fromString(eeprom_broker_ip);
+
+  Serial.println(WiFi.localIP());
 
   // Define device id Address == MAC address
   byte mac[6];
@@ -115,6 +123,7 @@ void setup() {
   topic_device_status = String("clients/") + device_id + String("/status");
   topic_device_capability = String("clients/") + device_id + String("/capability");
   topic_device_id = String("clients/") + device_id + String("/ip");
+
 
   // Connettiti al broker Mqtt
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
@@ -139,10 +148,10 @@ void loop(){
 }
 
 // Function for parse wifi ssd and password get from client on access point mode
-void parsePostRequest(String req, String &ssid, String &passwd){
+void parsePostRequest(String req, String &ssid, String &passwd, String &broker_ip){
 
   // get POST body
-  // curl -d "{'ssid':'House LANister', 'passwd':'F4tpK5@FCONn'}" 192.168.4.1
+  // curl -d "{'ssid':'House LANister', 'passwd':'***', 'broker': '10.126.1.27'}" 192.168.4.1:88
   String post_body;
   int count = 0;
   for(int i=0; i<req.length(); i++){
@@ -165,8 +174,11 @@ void parsePostRequest(String req, String &ssid, String &passwd){
 
   const char* ssid1 = doc["ssid"];
   const char* passwd1 = doc["passwd"];
+  const char* broker1 = doc["broker"];
   ssid = String(ssid1);
   passwd = String(passwd1);
+  broker_ip = String(broker1);
+
   return;
 }
 
@@ -174,16 +186,17 @@ void parsePostRequest(String req, String &ssid, String &passwd){
 void AccessPointOn(){
   
   WiFi.softAP(ssidAP, passwordAP);
-
-  IPAddress IP = WiFi.softAPIP();
+  WiFi.softAPConfig(ipAP, gatewayAP, nMaskAP);
+  //IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
-  Serial.println(IP);
+  Serial.println(ipAP);
   
   server.begin();
   
   // Stringhe dove inserire ssid e passwd del wifi tramite richiesta post
   String ssid;
   String passwd;
+  String broker_ip;
 
   while(1){
     WiFiClient client = server.available();
@@ -208,7 +221,7 @@ void AccessPointOn(){
       Serial.println("");
 
     
-      parsePostRequest(post_request, ssid, passwd);
+      parsePostRequest(post_request, ssid, passwd, broker_ip);
      
       // una volta ottenuti ssid e passwd del wifi esci dal ciclo
       break;
@@ -239,7 +252,7 @@ void AccessPointOn(){
   // Se esci vuol dire che mi sono connesso al wifi -> salva le credenziali in EEPROM
   preferences.putString("wifi_pass", passwd);
   preferences.putString("wifi_ssid", ssid);
-
+  preferences.putString("broker_ip", broker_ip);
 
 }
 
@@ -294,10 +307,10 @@ void onMqttConnect(bool sessionPresent) {
   char output[60];
 
   serializeJson(doc, output);
-  packetIdSub = mqttClient.publish(topic_device_status.c_str(), 0, true, "1");
-  packetIdSub = mqttClient.publish(topic_device_capability.c_str(), 0, true, output);
+  packetIdSub = mqttClient.publish(topic_device_status.c_str(), 1, true, "1");
+  packetIdSub = mqttClient.publish(topic_device_capability.c_str(), 1, true, output);
   const char* ip = WiFi.localIP().toString().c_str();
-  packetIdSub = mqttClient.publish(topic_device_id.c_str(), 0, true, ip);
+  packetIdSub = mqttClient.publish(topic_device_id.c_str(), 1, true, ip);
 }
 
 // Funzione che restituisce i primi n numeri primi
@@ -462,7 +475,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     doc["res"] = ris_string;
 
     serializeJson(doc, output);
-    mqttClient.publish("clients/task/result", 0, false, output);
+    mqttClient.publish("task/result", 1, false, output);
   }
   else if (strcmp(topic, "leader/task/word_count") == 0)
   {
@@ -493,7 +506,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     doc["task"] = "word_count";
     doc["res"] = String(ris);
     serializeJson(doc, output);
-    mqttClient.publish("clients/task/result", 0, false, output);
+    mqttClient.publish("task/result", 1, false, output);
 
   }
   else if (strcmp(topic, "leader/task/vect_mult") == 0)
@@ -562,7 +575,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
     doc["task"] = "vect_mult";
     doc["res"] = CS;
     serializeJson(doc, output);
-    mqttClient.publish("clients/task/result", 0, false, output);
+    mqttClient.publish("task/result", 1, false, output);
   }
   
   

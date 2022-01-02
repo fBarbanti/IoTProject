@@ -34,10 +34,13 @@ int offload_device_count_result = 0;
 /**** Device data structure   ****/
 
 /**** Access Point ****/
-const char* ssidAP     = "ESP32-Access-Point";
+const char* ssidAP     = "ESP32AP";
 const char* passwordAP = "123456789";
+IPAddress ipAP = IPAddress (10, 10, 2, 6); 
+IPAddress gatewayAP = IPAddress (10, 10, 2, 6); 
+IPAddress nMaskAP = IPAddress (255, 255, 255, 0); 
 
-// Set web server port number to 80
+// Set web server port number to 88
 WiFiServer server(88);
 /**** Access Point ****/
 
@@ -46,10 +49,12 @@ int wifi_status = WL_IDLE_STATUS;     // the Wifi radio's status
 
 /**** Eeprom ****/
 Preferences preferences;
+//Preferences are: wifi_ssid, wifi_pass, broker_ip
 /**** Eeprom ****/
 
 /**** MQTT ****/
-#define MQTT_HOST IPAddress(10, 126, 1, 27)
+//#define MQTT_HOST IPAddress(10, 126, 1,27)
+IPAddress MQTT_HOST;
 #define MQTT_PORT 1883
 
 AsyncMqttClient mqttClient;
@@ -69,7 +74,7 @@ float delta = 0;
 
 
 void accessPointOn();
-void parsePostRequest(String req, String &ssid, String &passwd);
+void parsePostRequest(String req, String &ssid, String &passwd, String &broker_ip);
 void MQTT_connect();
 void onMqttConnect(bool sessionPresent);
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total);
@@ -136,7 +141,10 @@ void setup() {
     else
       Serial.println("Connesso al wifi con le credenziali in EEPROM");
   }
-  
+ String eeprom_broker_ip = preferences.getString("broker_ip", "");
+ MQTT_HOST.fromString(eeprom_broker_ip);
+
+  Serial.println(WiFi.localIP());
 
   // Connettiti al broker Mqtt
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
@@ -163,10 +171,10 @@ void loop(){
 }
 
 // Function for parse wifi ssd and password get from client on access point mode
-void parsePostRequest(String req, String &ssid, String &passwd){
+void parsePostRequest(String req, String &ssid, String &passwd, String &broker_ip){
 
   // get POST body
-  // curl -d "{'ssid':'House LANister', 'passwd':'F4tpK5@FCONn'}" 192.168.4.1
+  // curl -d "{'ssid':'House LANister', 'passwd':'***', 'broker': '10.126.1.27'}" 192.168.4.1:88
   String post_body;
   int count = 0;
   for(int i=0; i<req.length(); i++){
@@ -189,8 +197,10 @@ void parsePostRequest(String req, String &ssid, String &passwd){
 
   const char* ssid1 = doc["ssid"];
   const char* passwd1 = doc["passwd"];
+  const char* broker1 = doc["broker"];
   ssid = String(ssid1);
   passwd = String(passwd1);
+  broker_ip = String(broker1);
   return;
 }
 
@@ -198,16 +208,17 @@ void parsePostRequest(String req, String &ssid, String &passwd){
 void accessPointOn(){
   
   WiFi.softAP(ssidAP, passwordAP);
-
-  IPAddress IP = WiFi.softAPIP();
+  WiFi.softAPConfig(ipAP, gatewayAP, nMaskAP);
+  //IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
-  Serial.println(IP);
+  Serial.println(ipAP);
   
   server.begin();
   
-  // Stringhe dove inserire ssid e passwd del wifi tramite richiesta post
+  // Stringhe dove inserire ssid e passwd del wifi tramite richiesta post e l'indirizzo ip del broker mqtt
   String ssid;
   String passwd;
+  String broker_ip;
 
   while(1){
     WiFiClient client = server.available();
@@ -232,11 +243,10 @@ void accessPointOn(){
       Serial.println("");
 
     
-      parsePostRequest(post_request, ssid, passwd);
+      parsePostRequest(post_request, ssid, passwd, broker_ip);
      
       // una volta ottenuti ssid e passwd del wifi esci dal ciclo
       break;
-
     }
     delay(1000);
   }
@@ -247,13 +257,6 @@ void accessPointOn(){
   WiFi.disconnect();
   delay(100);
   server.end();
-
-  // Prova a connetterti con le giuste credenziali
-  // const char* ssid12 = "House LANister";
-  // const char* password12 = "F4tpK5@FCONn";
-  // wifi_status = WiFi.begin(ssid12,password12);
-
-  
 
   wifi_status = WiFi.begin(ssid.c_str(),passwd.c_str());
 
@@ -270,8 +273,9 @@ void accessPointOn(){
   // Se esci vuol dire che mi sono connesso al wifi -> salva le credenziali in EEPROM
   preferences.putString("wifi_pass", passwd);
   preferences.putString("wifi_ssid", ssid);
+  preferences.putString("broker_ip", broker_ip);
 
-
+  
 }
 
 // Function to connect and reconnect as necessary to the MQTT server.
@@ -295,8 +299,6 @@ void MQTT_connect() {
 // Callback connect() to MQTT
 void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
-  Serial.print("Session present: ");
-  Serial.println(sessionPresent);
 
   // Sottoscriviti ai topic
   uint16_t packetIdSub = mqttClient.subscribe("clients/+/status", 1);
@@ -307,15 +309,11 @@ void onMqttConnect(bool sessionPresent) {
   Serial.print("Subscribing at packetId: ");
   Serial.println(packetIdSub);
 
-  packetIdSub = mqttClient.subscribe("clients/task/result", 1);
+  packetIdSub = mqttClient.subscribe("task/result", 1);
   Serial.print("Subscribing at packetId: ");
   Serial.println(packetIdSub);
 
   packetIdSub = mqttClient.subscribe("dashboard/task", 1);
-  Serial.print("Subscribing at packetId: ");
-  Serial.println(packetIdSub);
-
-  packetIdSub = mqttClient.subscribe("dashboard/measure/latency", 1);
   Serial.print("Subscribing at packetId: ");
   Serial.println(packetIdSub);
 
@@ -332,10 +330,10 @@ void onMqttConnect(bool sessionPresent) {
   char output[60];
 
   serializeJson(doc, output);
-  packetIdSub = mqttClient.publish(leader_status_topic, 0, true, "1");
-  packetIdSub = mqttClient.publish(leader_capability_topic, 0, true, output);
+  packetIdSub = mqttClient.publish(leader_status_topic, 1, true, "1");
+  packetIdSub = mqttClient.publish(leader_capability_topic, 1, true, output);
   const char* ip = WiFi.localIP().toString().c_str();
-  packetIdSub = mqttClient.publish(leader_ip_topic, 0, true, ip);
+  packetIdSub = mqttClient.publish(leader_ip_topic, 1, true, ip);
 
 }
 
@@ -580,7 +578,7 @@ void offloadTaskPrimeNumbers(int diff, int data){
   doc["param"] = data;
 
   serializeJson(doc, output);
-  mqttClient.publish("leader/task/prime_num", 0, false, output);
+  mqttClient.publish("leader/task/prime_num", 1, false, output);
 }
 
 // Funzione che pubblica un messaggio sul topic leader/task/word_count per offloadare il task word count
@@ -625,7 +623,7 @@ void offloadTaskWordCount(int diff, const char* data){
   doc["param"] = data;
 
   serializeJson(doc, output);
-  mqttClient.publish("leader/task/word_count", 0, false, output);
+  mqttClient.publish("leader/task/word_count", 1, false, output);
 
 }
 
@@ -681,21 +679,21 @@ void offloadTaskVectorMultiplication(int diff, int A[], int B[], int lenght){
   doc["B"] = BS;
 
   serializeJson(doc, output);
-  mqttClient.publish("leader/task/vect_mult", 0, false, output); 
+  mqttClient.publish("leader/task/vect_mult", 1, false, output); 
 
 
 }
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-  //Serial.println("Publish received.");
-  //Serial.print("topic: ");
-  //Serial.println(topic);
+  Serial.println("Publish received.");
+  Serial.print("topic: ");
+  Serial.println(topic);
 
   String formatted_payload = "";
   for (size_t i = 0; i < len; ++i)
     formatted_payload = formatted_payload + payload[i];
   
-  // Se il topic è fisso, che può essere "dashboard/task" oppure ""clients/task/result"
+  // Se il topic è fisso, che può essere "dashboard/task" oppure "task/result"
   if(strcmp(topic,"dashboard/task") == 0)
   {
     doc.clear();
@@ -742,7 +740,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       doc["res"] = res;
 
       serializeJson(doc, output);
-      mqttClient.publish("leader/task/result", 0, false, output);
+      mqttClient.publish("task/result", 1, false, output);
 
       // Fai partire il timer per la latenza
       send_time = micros();
@@ -768,7 +766,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       doc["task"] = "word_count";
       doc["res"] = String(num);
       serializeJson(doc, output);
-      mqttClient.publish("leader/task/result", 0, false, output);
+      mqttClient.publish("task/result", 1, false, output);
 
       // Fai partire il timer per la latenza
       send_time = micros();
@@ -855,13 +853,13 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       doc["task"] = "vect_mult";
       doc["res"] = CS;
       serializeJson(doc, output);
-      mqttClient.publish("leader/task/result", 0, false, output);
+      mqttClient.publish("task/result", 1, false, output);
 
       // Fai partire il timer per la latenza
       send_time = micros();
     }
   }
-  else if (strcmp(topic,"clients/task/result") == 0)
+  else if (strcmp(topic,"task/result") == 0)
   {
     offload_device_count_result ++;
     //Serial.println(offload_device_count);
@@ -871,20 +869,6 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
       Serial.println("Anche i device hanno terminato");
       offload_device_count_result = 0;
     }
-  }
-  else if (strcmp(topic,"dashboard/measure/latency") == 0)
-  {
-    receive_time = micros();
-    delta = (receive_time - send_time)/2;
-    //Serial.println(delta/1000);
-
-    StaticJsonDocument<16> doc;
-
-    doc["latency"] = int(delta/1000);
-    char output[16];
-
-    serializeJson(doc, output);
-    mqttClient.publish("leader/measure/latency", 1, false, output);
   }
   else{
     String topic_string = String(topic);
