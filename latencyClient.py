@@ -66,7 +66,7 @@ client = Client(client_id = "latency_client")
 client.on_message = on_message
 client.on_connect = on_connect
 
-client.connect("10.126.1.27")
+client.connect("localhost")
 
 rt = RepeatedTimer(2, publish) 
 
