@@ -1,0 +1,2619 @@
+[
+    {
+        "id": "b07eb55b522dcc11",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "68e44bcd03875f31",
+        "type": "ui_form",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "label": "",
+        "group": "6931883f7c958957",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Board MAC address",
+                "value": "BoardMacAddress",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Board password",
+                "value": "BoardPassword",
+                "type": "password",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "BoardMacAddress": "",
+            "BoardPassword": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "48f461eff6bb32b2",
+                "4c2c2081f3039cf7"
+            ]
+        ]
+    },
+    {
+        "id": "48f461eff6bb32b2",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var macAddress = { payload: msg.payload.BoardMacAddress};\nvar password = { payload: msg.payload.BoardPassword};\n\n\n// Devo creare il seguente comando:\n// nmcli dev wifi connect <mySSID> password <myPassword>\nlet text = \" password \"\nlet string = \"\\\"\";\nmacAddress.payload = string.concat(macAddress.payload);\nmacAddress.payload = macAddress.payload.concat(string);\nmacAddress.payload = macAddress.payload.concat(text);\n\nmacAddress.payload = macAddress.payload.concat(string);\nmacAddress.payload = macAddress.payload.concat(password.payload);\nmacAddress.payload = macAddress.payload.concat(string);\n\nreturn macAddress;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 200,
+        "wires": [
+            [
+                "c4011a20eb44cdf6"
+            ]
+        ]
+    },
+    {
+        "id": "c4011a20eb44cdf6",
+        "type": "exec",
+        "z": "b07eb55b522dcc11",
+        "command": "nmcli dev wifi connect ",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "60",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 440,
+        "y": 200,
+        "wires": [
+            [
+                "e1a55b379eda0651"
+            ],
+            [
+                "36485a2b8f43b315"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "d1417aa0fd6fbb37",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Connect to Access Point",
+        "info": "Connect to Access Point",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "e1a55b379eda0651",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "if(msg.payload.toString().localeCompare(\"\") == 0){\n    msg.payload = \"Connessione non riuscita\";\n}\nelse{\n    msg.payload = \"Connessione riuscita\";\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 140,
+        "wires": [
+            [
+                "83d8d99d11426595"
+            ]
+        ]
+    },
+    {
+        "id": "83d8d99d11426595",
+        "type": "ui_text",
+        "z": "b07eb55b522dcc11",
+        "group": "6931883f7c958957",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Stato della connesione:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 850,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "c5de33ad0d8105e0",
+        "type": "ui_form",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "label": "",
+        "group": "af0a19eb1e2f11dc",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "WiFi address",
+                "value": "WiFiAddress",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "WiFi password",
+                "value": "WiFiPassword",
+                "type": "password",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Broker ip address ",
+                "value": "BrokerIp",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "WiFiAddress": "",
+            "WiFiPassword": "",
+            "BrokerIp": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 90,
+        "y": 360,
+        "wires": [
+            [
+                "76dd2208ddc12869"
+            ]
+        ]
+    },
+    {
+        "id": "c502907885e5ad24",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Connect to WiFi",
+        "info": "Connect to WiFi",
+        "x": 120,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "6e49f1c3b8f8f354",
+        "type": "inject",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "str",
+        "x": 510,
+        "y": 140,
+        "wires": [
+            [
+                "e1a55b379eda0651"
+            ]
+        ]
+    },
+    {
+        "id": "76dd2208ddc12869",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var WiFiAddress = { payload: msg.payload.WiFiAddress};\nvar password = { payload: msg.payload.WiFiPassword};\nvar brokerIp = { payload: msg.payload.BrokerIp};\n\n\n// Devo creare il seguente comando:\n// curl -d \"{'ssid':'House LANister', 'passwd':'***', 'broker': '10.126.1.27'}\" 192.168.4.1\nlet string = \" -d \\\"{\\'ssid\\': \\'\";\n// -d \"{'ssid': '\nWiFiAddress.payload = string.concat(WiFiAddress.payload);\n// -d \"{'ssid': 'House LANister\n\nlet string1 = \"\\', \\'passwd\\': \\'\";\nWiFiAddress.payload = WiFiAddress.payload.concat(string1);\n// -d \"{'ssid': 'House LANister', 'passwd': '\n\nWiFiAddress.payload = WiFiAddress.payload.concat(password.payload);\n// -d \"{'ssid': 'House LANister', 'passwd': '****''\n\nlet string2 = \"\\', \\'broker\\': \\'\";\nWiFiAddress.payload = WiFiAddress.payload.concat(string2);\n// -d \"{'ssid': 'House LANister', 'passwd': '****'', 'broker': '\n\nWiFiAddress.payload = WiFiAddress.payload.concat(brokerIp.payload);\n\nlet string3 = \"\\'}\\\" 10.10.2.6:88\"\nWiFiAddress.payload = WiFiAddress.payload.concat(string3);\n\nreturn WiFiAddress;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 360,
+        "wires": [
+            [
+                "4736f01c41da5b73"
+            ]
+        ]
+    },
+    {
+        "id": "37102d421e36ed45",
+        "type": "ui_text",
+        "z": "b07eb55b522dcc11",
+        "group": "af0a19eb1e2f11dc",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Inserisci le credenziali del WiFi a cui vuoi connettere il device",
+        "format": "",
+        "layout": "row-spread",
+        "x": 260,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4736f01c41da5b73",
+        "type": "exec",
+        "z": "b07eb55b522dcc11",
+        "command": "curl",
+        "addpay": "payload",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "60",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 410,
+        "y": 360,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "4c2c2081f3039cf7",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "msg.payload = \"Tentativo di connessione...\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 80,
+        "wires": [
+            [
+                "83d8d99d11426595"
+            ]
+        ]
+    },
+    {
+        "id": "ec68b139a19082d7",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Dispositivi online status",
+        "info": "Connect to WiFi",
+        "x": 160,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "912dc4c1b7626a36",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "leader/task/prime_num",
+        "topic": "leader/task/prime_num",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 1700,
+        "wires": [
+            [
+                "17ee697a6049ebed"
+            ]
+        ]
+    },
+    {
+        "id": "d6030dd9be82e364",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "clients/+/status",
+        "topic": "clients/+/status",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 660,
+        "wires": [
+            [
+                "e116191cfc6eb793"
+            ]
+        ]
+    },
+    {
+        "id": "3b41b1be7649efbf",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Carico dei dispositivi - Grafico a Torta e Bar",
+        "info": "Connect to WiFi",
+        "x": 220,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "db5ae337e3e62cfa",
+        "type": "inject",
+        "z": "b07eb55b522dcc11",
+        "name": "Creazione tabella",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "CREATE TABLE TAB(    ID TEXT PRIMARY KEY NOT NULL,   STATUS BOOL NOT NULL,   CAP_PRIME_NUM INT NOT NULL, CAP_WORD_COUNT INT NOT NULL, CAP_VECT_MULT INT NOT NULL, IP TEXT NOT NULL)",
+        "payloadType": "date",
+        "x": 170,
+        "y": 720,
+        "wires": [
+            [
+                "539eaf39b7f345fc"
+            ]
+        ]
+    },
+    {
+        "id": "539eaf39b7f345fc",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 510,
+        "y": 720,
+        "wires": [
+            [
+                "dcaeb4f9c871f8cd"
+            ]
+        ]
+    },
+    {
+        "id": "a9cb7f7fdbae06ad",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = global.get(\"id\");\nconst status = global.get(\"state\");\n\n\nvar newMsg = {\n \"topic\": \"INSERT INTO TAB VALUES ('\"+slug+\"', \"+status+\", \"+0+\", \"+0+\", \"+0+\", 'None')\"\n}\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 680,
+        "wires": [
+            [
+                "a2b1750daa08a649"
+            ]
+        ]
+    },
+    {
+        "id": "5292f9025d9254b8",
+        "type": "ui_table",
+        "z": "b07eb55b522dcc11",
+        "group": "bae991e3737baf25",
+        "name": "",
+        "order": 1,
+        "width": 13,
+        "height": 14,
+        "columns": [
+            {
+                "field": "ID",
+                "title": "id",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "STATUS",
+                "title": "status",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "CAP_PRIME_NUM",
+                "title": "cap_prime_num",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "CAP_WORD_COUNT",
+                "title": "cap_word_count",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "CAP_VECT_MULT",
+                "title": "cap_vect_mult",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "IP",
+                "title": "ip",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 1490,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "72e13d1d235fcabf",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var newMsg = {\n \"topic\": \"SELECT * FROM TAB\"\n}\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 700,
+        "wires": [
+            [
+                "10db8dcfddce24a1"
+            ]
+        ]
+    },
+    {
+        "id": "10db8dcfddce24a1",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 1350,
+        "y": 700,
+        "wires": [
+            [
+                "5292f9025d9254b8"
+            ]
+        ]
+    },
+    {
+        "id": "e116191cfc6eb793",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const str = msg.topic;\nconst slug = str.split('/')[1];\nvar status = msg.payload;\n\nglobal.set('id', slug);\nglobal.set('state', status);\n\nvar msgSelect = {\n \"topic\": \"SELECT * FROM TAB WHERE id= '\"+slug+\"'\"\n}\n\nreturn msgSelect;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 660,
+        "wires": [
+            [
+                "539eaf39b7f345fc"
+            ]
+        ]
+    },
+    {
+        "id": "dcaeb4f9c871f8cd",
+        "type": "switch",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 690,
+        "y": 720,
+        "wires": [
+            [
+                "a9cb7f7fdbae06ad"
+            ],
+            [
+                "bcbfca1c99cb6c09"
+            ]
+        ]
+    },
+    {
+        "id": "bcbfca1c99cb6c09",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = global.get(\"id\");\nconst status = global.get(\"state\");\n\n\nvar newMsg = {\n \"topic\": \"UPDATE TAB SET status = \"+status+\" WHERE id='\"+slug+\"'\"\n}\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 740,
+        "wires": [
+            [
+                "a2b1750daa08a649"
+            ]
+        ]
+    },
+    {
+        "id": "a2b1750daa08a649",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqliet",
+        "x": 1030,
+        "y": 700,
+        "wires": [
+            [
+                "72e13d1d235fcabf"
+            ]
+        ]
+    },
+    {
+        "id": "26a768ba73861d11",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Guarda se il device è gia nella tabella",
+        "info": "",
+        "x": 430,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "687e41627a838155",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Se empty crea una riga altrimenti aggiorna",
+        "info": "",
+        "x": 900,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "5d679defdb8d7f72",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Dispositivi online capability",
+        "info": "Connect to WiFi",
+        "x": 170,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "c0ed86e38d29d5c2",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "clients/+/capability",
+        "topic": "clients/+/capability",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 150,
+        "y": 900,
+        "wires": [
+            [
+                "b75d34d078df8df6"
+            ]
+        ]
+    },
+    {
+        "id": "43bc479142421551",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 510,
+        "y": 900,
+        "wires": [
+            [
+                "0a9491cbc7099363"
+            ]
+        ]
+    },
+    {
+        "id": "b68d2e0319c42910",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = global.get(\"id_cap\");\nconst cap_prime_num = global.get(\"cap_prime_num\");\nconst cap_word_count = global.get(\"cap_word_count\");\nconst cap_vect_mult = global.get(\"cap_vect_mult\");\nconst ip = \"\";\n\nvar newMsg = {\n \"topic\": \"INSERT INTO TAB VALUES ('\"+slug+\"', \"+0+\", \"+cap_prime_num+\", \"+cap_word_count+\", \"+cap_vect_mult+\", 'None')\"\n}\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 860,
+        "wires": [
+            [
+                "fe83dad76b2a1e6c"
+            ]
+        ]
+    },
+    {
+        "id": "b75d34d078df8df6",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const str = msg.topic;\nconst slug = str.split('/')[1];\nvar cap_prime_num = msg.payload.prime_num;\nvar cap_word_count = msg.payload.word_count;\nvar cap_vect_mult = msg.payload.vect_mult;\n\nglobal.set('id_cap', slug);\nglobal.set('cap_prime_num', cap_prime_num);\nglobal.set('cap_word_count', cap_word_count);\nglobal.set('cap_vect_mult', cap_vect_mult);\n\n\nvar msgSelect = {\n \"topic\": \"SELECT * FROM TAB WHERE id= '\"+slug+\"'\"\n}\nreturn msgSelect;\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 900,
+        "wires": [
+            [
+                "43bc479142421551"
+            ]
+        ]
+    },
+    {
+        "id": "0a9491cbc7099363",
+        "type": "switch",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 690,
+        "y": 900,
+        "wires": [
+            [
+                "b68d2e0319c42910"
+            ],
+            [
+                "1f4ef99796c558cd"
+            ]
+        ]
+    },
+    {
+        "id": "1f4ef99796c558cd",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = global.get(\"id_cap\");\nconst cap_prime_num = global.get(\"cap_prime_num\");\nconst cap_word_count = global.get(\"cap_word_count\");\nconst cap_vect_mult = global.get(\"cap_vect_mult\");\n\nvar newMsg = {\n \"topic\": \"UPDATE TAB SET cap_prime_num = \"+cap_prime_num+\", cap_word_count = \"+cap_word_count+\", cap_vect_mult = \"+cap_vect_mult+\" WHERE id='\"+slug+\"'\"\n}\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 920,
+        "wires": [
+            [
+                "fe83dad76b2a1e6c"
+            ]
+        ]
+    },
+    {
+        "id": "fe83dad76b2a1e6c",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqliet",
+        "x": 1030,
+        "y": 880,
+        "wires": [
+            [
+                "72e13d1d235fcabf"
+            ]
+        ]
+    },
+    {
+        "id": "1274b9372779bba2",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Guarda se il device è gia nella tabella",
+        "info": "",
+        "x": 450,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "c8293c4e99992e37",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Se empty crea una riga altrimenti aggiorna",
+        "info": "",
+        "x": 900,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "bf17dd161f5d916f",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "$SYS/broker/bytes/received",
+        "topic": "$SYS/broker/bytes/received",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 2020,
+        "wires": [
+            [
+                "166012729cd81251"
+            ]
+        ]
+    },
+    {
+        "id": "b602f6b3315028c2",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Mqtt Broker Performance",
+        "info": "Connect to WiFi",
+        "x": 170,
+        "y": 1980,
+        "wires": []
+    },
+    {
+        "id": "166012729cd81251",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var i = global.get('byte_received');\nvar index_i = global.get('index_i');\n\nvar mymsg = {};\nif(index_i == 0){\n    mymsg.payload = [];\n    global.set('index_i', 1);\n}\nelse\n    mymsg.payload = msg.payload - i;\n\nglobal.set(\"byte_received\", msg.payload);\nreturn mymsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 2020,
+        "wires": [
+            [
+                "7d0ddb0d8172094f"
+            ]
+        ]
+    },
+    {
+        "id": "7694fb2a92bf41a7",
+        "type": "inject",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[]",
+        "payloadType": "json",
+        "x": 130,
+        "y": 2140,
+        "wires": [
+            [
+                "923e63377be3b70b"
+            ]
+        ]
+    },
+    {
+        "id": "923e63377be3b70b",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "global.set('byte_sent', 0);\nglobal.set('byte_received', 0);\n\nglobal.set('index_i', 0);\nglobal.set('index_y',0);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 2140,
+        "wires": [
+            [
+                "0f10cae022f3d2ef",
+                "7d0ddb0d8172094f"
+            ]
+        ]
+    },
+    {
+        "id": "7d0ddb0d8172094f",
+        "type": "ui_chart",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "group": "9f694279608871d8",
+        "order": 1,
+        "width": 8,
+        "height": 3,
+        "label": "Byte received by mosquitto broker",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No data",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 720,
+        "y": 2020,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4c9e734b6fa46090",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "$SYS/broker/bytes/sent",
+        "topic": "$SYS/broker/bytes/sent",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 2080,
+        "wires": [
+            [
+                "b4fc41fd6e1d5246"
+            ]
+        ]
+    },
+    {
+        "id": "b4fc41fd6e1d5246",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var i = global.get('byte_sent');\nvar index_y = global.get('index_y');\n\nvar mymsg = {};\n\nif(index_y == 0){\n    mymsg.payload = [];\n    global.set('index_y', 1);\n}\nelse\n    mymsg.payload = msg.payload - i;\n\nglobal.set(\"byte_sent\", msg.payload);\nreturn mymsg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 2080,
+        "wires": [
+            [
+                "0f10cae022f3d2ef"
+            ]
+        ]
+    },
+    {
+        "id": "0f10cae022f3d2ef",
+        "type": "ui_chart",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "group": "9f694279608871d8",
+        "order": 2,
+        "width": 8,
+        "height": 3,
+        "label": "Byte sent by mosquitto broker",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No data",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 710,
+        "y": 2080,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a12dbd2cbaae2f27",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "task/result",
+        "topic": "task/result",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 1900,
+        "wires": [
+            [
+                "eedf1d22cbba6bdd"
+            ]
+        ]
+    },
+    {
+        "id": "46ff540ebc9bb8dc",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "leader/task/word_count",
+        "topic": "leader/task/word_count",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 1760,
+        "wires": [
+            [
+                "960dce7ac6482a0b"
+            ]
+        ]
+    },
+    {
+        "id": "8d8678d1616e771f",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "leader/task/vect_mult",
+        "topic": "leader/task/vect_mult",
+        "qos": "1",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 1820,
+        "wires": [
+            [
+                "cf1b194625f509ae"
+            ]
+        ]
+    },
+    {
+        "id": "6686654c36207f1b",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "clients/latency/value",
+        "topic": "clients/latency/value",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 750,
+        "y": 1920,
+        "wires": [
+            [
+                "08baade12898d8ed"
+            ]
+        ]
+    },
+    {
+        "id": "97756e63e1415dfe",
+        "type": "ui_chart",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "group": "9f694279608871d8",
+        "order": 3,
+        "width": 8,
+        "height": 3,
+        "label": "Latency (ms)",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No data",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1110,
+        "y": 2200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "08baade12898d8ed",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var obj = {};\nobj.payload = parseFloat(msg.payload);\nreturn obj;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 1920,
+        "wires": [
+            [
+                "97756e63e1415dfe",
+                "ca32ad0241579075"
+            ]
+        ]
+    },
+    {
+        "id": "17ee697a6049ebed",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var msg_return = {};\nmsg_return.series = [\"Prime number\"];\nvar arr = msg.payload.dev;\nvar msg_data = [];\nvar msg_labels = [];\n\nfor (i = 0; i < arr.length; i++){\n    msg_data[i] = arr[i].num_sec;\n    msg_labels[i] = arr[i].id;\n}\n\n\nmsg_return.data = [ msg_data ];\nmsg_return.labels = msg_labels;\n\nmsg.payload = [msg_return];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1700,
+        "wires": [
+            [
+                "5e464c90f7c22f76"
+            ]
+        ]
+    },
+    {
+        "id": "5e464c90f7c22f76",
+        "type": "ui_chart",
+        "z": "b07eb55b522dcc11",
+        "name": "Device Load Bar",
+        "group": "15ec67556bfc1021",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Device Load Bar (num_sec)",
+        "chartType": "horizontalBar",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "No device active",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": true,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1200,
+        "y": 1720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "960dce7ac6482a0b",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var msg_return = {};\nmsg_return.series = [\"Character Count\"];\nvar arr = msg.payload.dev;\nvar msg_data = [];\nvar msg_labels = [];\n\nfor (var i = 0; i < arr.length; i++){\n    msg_data[i] = arr[i].num_sec;\n    msg_labels[i] = arr[i].id;\n}\nmsg_return.data = [ msg_data ];\nmsg_return.labels = msg_labels;\n\nmsg.payload = [msg_return];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1760,
+        "wires": [
+            [
+                "5e464c90f7c22f76"
+            ]
+        ]
+    },
+    {
+        "id": "cf1b194625f509ae",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var msg_return = {};\nmsg_return.series = [\"Vector Multiplication\"];\nvar arr = msg.payload.dev;\nvar msg_data = [];\nvar msg_labels = [];\n\nfor (var i = 0; i < arr.length; i++){\n    msg_data[i] = arr[i].num_sec;\n    msg_labels[i] = arr[i].id;\n}\n\nmsg_return.data = [ msg_data ];\nmsg_return.labels = msg_labels;\n\nmsg.payload = [msg_return];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1820,
+        "wires": [
+            [
+                "5e464c90f7c22f76"
+            ]
+        ]
+    },
+    {
+        "id": "d4416ff740ab538b",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "leader/lead/status",
+        "topic": "leader/lead/status",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 140,
+        "y": 620,
+        "wires": [
+            [
+                "e116191cfc6eb793"
+            ]
+        ]
+    },
+    {
+        "id": "1914feed53f6557a",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "leader/lead/capability",
+        "topic": "leader/lead/capability",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 860,
+        "wires": [
+            [
+                "b75d34d078df8df6"
+            ]
+        ]
+    },
+    {
+        "id": "eedf1d22cbba6bdd",
+        "type": "ui_text",
+        "z": "b07eb55b522dcc11",
+        "group": "5197e0b5174cf8e9",
+        "order": 3,
+        "width": 10,
+        "height": 1,
+        "name": "Task Result",
+        "label": "Result:",
+        "format": "{{msg.payload.res}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 310,
+        "y": 1900,
+        "wires": []
+    },
+    {
+        "id": "70463f7ee8603745",
+        "type": "ui_form",
+        "z": "b07eb55b522dcc11",
+        "name": "Prime number",
+        "label": "Prime number",
+        "group": "fdb43756a1b4b052",
+        "order": 2,
+        "width": 6,
+        "height": 1,
+        "options": [
+            {
+                "label": "Number",
+                "value": "Number",
+                "type": "number",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "Number": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 140,
+        "y": 1200,
+        "wires": [
+            [
+                "84e0e3a750cb5894"
+            ]
+        ]
+    },
+    {
+        "id": "565cbcc83000a4a0",
+        "type": "ui_form",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "label": "Vector multiplication",
+        "group": "fdb43756a1b4b052",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "options": [
+            {
+                "label": "Vector A",
+                "value": "VectorA",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Vector B",
+                "value": "VectorB",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "VectorA": "",
+            "VectorB": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": false,
+        "className": "",
+        "x": 120,
+        "y": 1240,
+        "wires": [
+            [
+                "da660814ecfdb67e"
+            ]
+        ]
+    },
+    {
+        "id": "2c1fba101bd6df9a",
+        "type": "ui_form",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "label": "Word Count",
+        "group": "5197e0b5174cf8e9",
+        "order": 1,
+        "width": 10,
+        "height": 1,
+        "options": [
+            {
+                "label": "Text",
+                "value": "Text",
+                "type": "multiline",
+                "required": true,
+                "rows": 4
+            }
+        ],
+        "formValue": {
+            "Text": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 150,
+        "y": 1280,
+        "wires": [
+            [
+                "d9b73f8cb6cc85aa"
+            ]
+        ]
+    },
+    {
+        "id": "33405e0c24a47610",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Choose algotithm",
+        "info": "",
+        "x": 140,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "84e0e3a750cb5894",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "let num_sec_slider = global.get(\"num_sec_slider\");\nlet str = \"{\\\"task\\\": \\\"prime_num\\\", \\\"data\\\":\\\"\" + msg.payload.Number +\"\\\", \\\"num_sec\\\": \" +num_sec_slider+\"}\";\nglobal.set(\"num_sec\", msg.payload.Num_sec);\nglobal.set(\"task\", \"prime_num\");\nvar newMsg = {};\nglobal.set(\"str\", str);\n\nnewMsg.payload = str;\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1200,
+        "wires": [
+            [
+                "8ee2a3ad9740331b"
+            ]
+        ]
+    },
+    {
+        "id": "bb50ba06e608ada3",
+        "type": "mqtt out",
+        "z": "b07eb55b522dcc11",
+        "name": "dashboard/task",
+        "topic": "dashboard/task",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "fad20c1c9221266d",
+        "x": 500,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "da660814ecfdb67e",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "let vA = msg.payload.VectorA;\nlet vB = msg.payload.VectorB;\nlet s = \"\\\"{\"+vA+\"},{\"+vB+\"}\\\"\"; \nlet num_sec_slider = global.get(\"num_sec_slider\");\nlet str = \"{\\\"task\\\": \\\"vect_mult\\\", \\\"data\\\":\" + s +\", \\\"num_sec\\\": \" +num_sec_slider +\"}\";\n\nglobal.set(\"num_sec\", msg.payload.Num_sec);\nglobal.set(\"task\", \"vect_mult\");\nglobal.set(\"str\", str);\n\nvar newMsg = {};\nnewMsg.payload = str;\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1240,
+        "wires": [
+            [
+                "8ee2a3ad9740331b"
+            ]
+        ]
+    },
+    {
+        "id": "d9b73f8cb6cc85aa",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "let num_sec_slider = global.get(\"num_sec_slider\");\nlet str = \"{\\\"task\\\": \\\"word_count\\\", \\\"data\\\":\\\"\" + msg.payload.Text +\"\\\", \\\"num_sec\\\": \" +num_sec_slider +\"}\";\nglobal.set(\"num_sec\", msg.payload.Num_sec);\nglobal.set(\"task\", \"word_count\");\nglobal.set(\"str\", str);\n\n\nvar newMsg = {};\nnewMsg.payload = str;\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1280,
+        "wires": [
+            [
+                "8ee2a3ad9740331b"
+            ]
+        ]
+    },
+    {
+        "id": "63ca8117ecdfa413",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var n = global.get(\"num_sec_slider\");\nvar m = global.get(\"task\");\nif(m.localeCompare(\"prime_num\") == 0)\n    msg.payload = Math.round((100*n)/msg.payload[0].CAP_PRIME_NUM);\nif(m.localeCompare(\"word_count\") == 0)\n    msg.payload = Math.round((100*n)/msg.payload[0].CAP_WORD_COUNT);\nif(m.localeCompare(\"vect_mult\") == 0)\n    msg.payload = Math.round((100*n)/msg.payload[0].CAP_VECT_MULT);\n\nif(msg.payload > 100)\n    msg.payload = 100;\n    \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 1200,
+        "wires": [
+            [
+                "73c1c7e0572900d0"
+            ]
+        ]
+    },
+    {
+        "id": "5215cb8415a7e804",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 830,
+        "y": 1200,
+        "wires": [
+            [
+                "63ca8117ecdfa413"
+            ]
+        ]
+    },
+    {
+        "id": "8ee2a3ad9740331b",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = \"lead\";\n\nvar msgSelect = {\n \"topic\": \"SELECT * FROM TAB WHERE id= '\"+slug+\"'\"\n}\nreturn msgSelect;\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 1200,
+        "wires": [
+            [
+                "5215cb8415a7e804",
+                "519242c00e549d66"
+            ]
+        ]
+    },
+    {
+        "id": "73c1c7e0572900d0",
+        "type": "ui_gauge",
+        "z": "b07eb55b522dcc11",
+        "name": "Leader load",
+        "group": "15ec67556bfc1021",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Leader load (%)",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "className": "",
+        "x": 1230,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "519242c00e549d66",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "clear device load bar",
+        "func": "msg.payload = []\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 1580,
+        "wires": [
+            [
+                "5e464c90f7c22f76"
+            ]
+        ]
+    },
+    {
+        "id": "24eac34763d3b786",
+        "type": "inject",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "str",
+        "payloadType": "global",
+        "x": 150,
+        "y": 1360,
+        "wires": [
+            [
+                "d863be67170c33b6"
+            ]
+        ]
+    },
+    {
+        "id": "885020b7e6620c51",
+        "type": "inject",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 1320,
+        "wires": [
+            [
+                "feefc0b2e7d65ef2"
+            ]
+        ]
+    },
+    {
+        "id": "feefc0b2e7d65ef2",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "Clear str global variable",
+        "func": "global.set(\"str\", \"\");\nglobal.set(\"max_latency\", 500)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 1320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d863be67170c33b6",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "if(msg.payload.localeCompare(\"\") == 0)\n    return null;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 1360,
+        "wires": [
+            [
+                "bb50ba06e608ada3"
+            ]
+        ]
+    },
+    {
+        "id": "27acd80895b54943",
+        "type": "ui_button",
+        "z": "b07eb55b522dcc11",
+        "name": "Stop Task",
+        "group": "fdb43756a1b4b052",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Stop Task",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "pause_circle_outline",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 120,
+        "y": 1580,
+        "wires": [
+            [
+                "f458e5a080e5dc12",
+                "519242c00e549d66"
+            ]
+        ]
+    },
+    {
+        "id": "f458e5a080e5dc12",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "global.set(\"str\", \"\");\nmsg.payload = 0;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 1540,
+        "wires": [
+            [
+                "73c1c7e0572900d0"
+            ]
+        ]
+    },
+    {
+        "id": "4f8856f0d941a25b",
+        "type": "ui_text",
+        "z": "b07eb55b522dcc11",
+        "group": "6931883f7c958957",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Errore della connesione:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 850,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "36485a2b8f43b315",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "if(msg.payload.localeCompare(\"\") == 0)\n    msg.payload = \"Nessun errore\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 240,
+        "wires": [
+            [
+                "4f8856f0d941a25b"
+            ]
+        ]
+    },
+    {
+        "id": "5ee082aa7864bf77",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "$SYS/broker/store/messages/bytes",
+        "topic": "$SYS/broker/store/messages/bytes",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 2300,
+        "wires": [
+            [
+                "97f963623f06cccc"
+            ]
+        ]
+    },
+    {
+        "id": "97f963623f06cccc",
+        "type": "ui_gauge",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "group": "15ec67556bfc1021",
+        "order": 3,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Byte store in queues by mosquitto broker",
+        "label": "Byte",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "5000",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "className": "",
+        "x": 540,
+        "y": 2300,
+        "wires": []
+    },
+    {
+        "id": "8cb51a79572d5539",
+        "type": "ui_button",
+        "z": "b07eb55b522dcc11",
+        "name": "Clear graphs",
+        "group": "9f694279608871d8",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Clear graphs",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 130,
+        "y": 2200,
+        "wires": [
+            [
+                "8c238328f06ed50a"
+            ]
+        ]
+    },
+    {
+        "id": "8c238328f06ed50a",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "clear device load bar",
+        "func": "msg.payload = []\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 2200,
+        "wires": [
+            [
+                "97756e63e1415dfe",
+                "7d0ddb0d8172094f",
+                "0f10cae022f3d2ef"
+            ]
+        ]
+    },
+    {
+        "id": "99939bb22e65d735",
+        "type": "ui_slider",
+        "z": "b07eb55b522dcc11",
+        "name": "Num sec",
+        "label": "Num sec",
+        "tooltip": "",
+        "group": "5197e0b5174cf8e9",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": "100000",
+        "step": 1,
+        "className": "",
+        "x": 120,
+        "y": 1440,
+        "wires": [
+            [
+                "172a65015ca3f027"
+            ]
+        ]
+    },
+    {
+        "id": "a172b7a24da9715f",
+        "type": "ui_template",
+        "z": "b07eb55b522dcc11",
+        "group": "5197e0b5174cf8e9",
+        "name": "",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\nmd-slider[md-discrete] .md-sign,\nmd-slider[md-discrete] .md-sign:after {\n opacity: 1;\n -webkit-transform: translate3d(0, 0, 0) scale(1);\n transform: translate3d(0, 0, 0) scale(1);\n width:auto;\n}\n</style>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 120,
+        "y": 1480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "172a65015ca3f027",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "global.set(\"num_sec_slider\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 1440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e5d4b5f0b9cb4659",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "leader/lead/ip",
+        "topic": "leader/lead/ip",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 1020,
+        "wires": [
+            [
+                "9c0c0aee2e9b6699"
+            ]
+        ]
+    },
+    {
+        "id": "5277967361937374",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "clients/+/ip",
+        "topic": "clients/+/ip",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 1080,
+        "wires": [
+            [
+                "9c0c0aee2e9b6699"
+            ]
+        ]
+    },
+    {
+        "id": "9c0c0aee2e9b6699",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const str = msg.topic;\nconst slug = str.split('/')[1];\nvar ip = msg.payload;\n\nglobal.set('id_ip', slug);\nglobal.set('ip', ip);\n\nvar msgSelect = {\n \"topic\": \"SELECT * FROM TAB WHERE id= '\"+slug+\"'\"\n}\n\nreturn msgSelect;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 1040,
+        "wires": [
+            [
+                "64e94f79f03566ac"
+            ]
+        ]
+    },
+    {
+        "id": "64e94f79f03566ac",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 510,
+        "y": 1040,
+        "wires": [
+            [
+                "6915523b13d04b22"
+            ]
+        ]
+    },
+    {
+        "id": "6915523b13d04b22",
+        "type": "switch",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "nempty"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 650,
+        "y": 1040,
+        "wires": [
+            [
+                "f47c5185df074487"
+            ],
+            [
+                "b09a82e20122c9c0"
+            ]
+        ]
+    },
+    {
+        "id": "faed536c524ec4ad",
+        "type": "comment",
+        "z": "b07eb55b522dcc11",
+        "name": "Se empty crea una riga altrimenti aggiorna",
+        "info": "",
+        "x": 880,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "f47c5185df074487",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = global.get(\"id_ip\");\nconst ip = global.get(\"ip\");\n\nvar newMsg = {\n \"topic\": \"INSERT INTO TAB VALUES ('\"+slug+\"', \"+0+\", \"+0+\", \"+0+\", \"+0+\", '\"+ip+\"')\"\n}\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 1000,
+        "wires": [
+            [
+                "510e0a58d3654114"
+            ]
+        ]
+    },
+    {
+        "id": "b09a82e20122c9c0",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "const slug = global.get(\"id_ip\");\nconst ip = global.get(\"ip\");\n\nvar newMsg = {\n \"topic\": \"UPDATE TAB SET ip = '\"+ip+\"' WHERE id='\"+slug+\"'\"\n}\n\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 860,
+        "y": 1060,
+        "wires": [
+            [
+                "510e0a58d3654114"
+            ]
+        ]
+    },
+    {
+        "id": "510e0a58d3654114",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqliet",
+        "x": 1030,
+        "y": 1020,
+        "wires": [
+            [
+                "72e13d1d235fcabf"
+            ]
+        ]
+    },
+    {
+        "id": "73f4f1e47468d5f5",
+        "type": "switch",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "false"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1250,
+        "y": 1860,
+        "wires": [
+            [
+                "f458e5a080e5dc12"
+            ]
+        ]
+    },
+    {
+        "id": "2afa7a6ecf7a0500",
+        "type": "mqtt in",
+        "z": "b07eb55b522dcc11",
+        "name": "clients/latency/measure",
+        "topic": "clients/latency/measure",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "fad20c1c9221266d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 1240,
+        "y": 1920,
+        "wires": [
+            [
+                "025eb26e34ebb0d2"
+            ]
+        ]
+    },
+    {
+        "id": "025eb26e34ebb0d2",
+        "type": "mqtt out",
+        "z": "b07eb55b522dcc11",
+        "name": "dashboard/latency",
+        "topic": "dashboard/latency/measure",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "fad20c1c9221266d",
+        "x": 1490,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "ca32ad0241579075",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var i = global.get(\"max_latency\");\nif(msg.payload > i)\n    msg.payload = false;\nelse\n    msg.payload = true;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1100,
+        "y": 1860,
+        "wires": [
+            [
+                "73f4f1e47468d5f5"
+            ]
+        ]
+    },
+    {
+        "id": "c9a3b350fa80a3fc",
+        "type": "ui_text_input",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "label": "Max latency",
+        "tooltip": "",
+        "group": "9f694279608871d8",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "topic",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 130,
+        "y": 1520,
+        "wires": [
+            [
+                "f6b9c4d37f41a4a0"
+            ]
+        ]
+    },
+    {
+        "id": "f6b9c4d37f41a4a0",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "global.set(\"max_latency\", parseFloat(msg.payload));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 1520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "84763d8930c258d1",
+        "type": "ui_button",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "group": "bae991e3737baf25",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Clear Table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1270,
+        "y": 840,
+        "wires": [
+            [
+                "261a6f8b2bc79bc8"
+            ]
+        ]
+    },
+    {
+        "id": "261a6f8b2bc79bc8",
+        "type": "function",
+        "z": "b07eb55b522dcc11",
+        "name": "",
+        "func": "var msgSelect = {\n \"topic\": \"DELETE FROM TAB\"\n}\nreturn msgSelect;\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1420,
+        "y": 840,
+        "wires": [
+            [
+                "7455c787ccb35034"
+            ]
+        ]
+    },
+    {
+        "id": "7455c787ccb35034",
+        "type": "sqlite",
+        "z": "b07eb55b522dcc11",
+        "mydb": "861ffdc416c947cc",
+        "sqlquery": "msg.topic",
+        "sql": "",
+        "name": "Sqlite",
+        "x": 1570,
+        "y": 840,
+        "wires": [
+            [
+                "72e13d1d235fcabf"
+            ]
+        ]
+    },
+    {
+        "id": "764920ad654b8f0c",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "3b04cee795519cdc",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "d5ed813ee89f4ff6",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "613e944ec2dfcb3a",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "ce72c9e40204c019",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "c85f7db12eabde81",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "e8972783a397fc5f",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "b7fab551dca55ff4",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "acd679810641e9b3",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "3a8e9a77d4b2da45",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "ce22152cde4ac2b3",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "c7f6ce5584a1e28c",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "e1701694efc51923",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "ac6dcf6bc6d00681",
+        "type": "ui_spacer",
+        "z": "b07eb55b522dcc11",
+        "name": "spacer",
+        "group": "d37467cb094882c8",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "6931883f7c958957",
+        "type": "ui_group",
+        "name": "ConnectToAccessPoint",
+        "tab": "8c6bb4c8f4e07ee3",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "af0a19eb1e2f11dc",
+        "type": "ui_group",
+        "name": "ConnectToWiFi",
+        "tab": "8c6bb4c8f4e07ee3",
+        "order": 2,
+        "disp": true,
+        "width": 6,
+        "collapse": false
+    },
+    {
+        "id": "fad20c1c9221266d",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "861ffdc416c947cc",
+        "type": "sqlitedb",
+        "db": ":memory:",
+        "mode": "RWC"
+    },
+    {
+        "id": "bae991e3737baf25",
+        "type": "ui_group",
+        "name": "ConnectedDevice",
+        "tab": "8c6bb4c8f4e07ee3",
+        "order": 3,
+        "disp": true,
+        "width": 13,
+        "collapse": false
+    },
+    {
+        "id": "9f694279608871d8",
+        "type": "ui_group",
+        "name": "Performance",
+        "tab": "8d9e41efc08e124d",
+        "order": 5,
+        "disp": true,
+        "width": "8",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "15ec67556bfc1021",
+        "type": "ui_group",
+        "name": "Load chart",
+        "tab": "8d9e41efc08e124d",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5197e0b5174cf8e9",
+        "type": "ui_group",
+        "name": "Word_count",
+        "tab": "8d9e41efc08e124d",
+        "order": 2,
+        "disp": false,
+        "width": 10,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "fdb43756a1b4b052",
+        "type": "ui_group",
+        "name": "Prime_num",
+        "tab": "8d9e41efc08e124d",
+        "order": 1,
+        "disp": false,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "8c6bb4c8f4e07ee3",
+        "type": "ui_tab",
+        "name": "Connections",
+        "icon": "network_wifi",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "8d9e41efc08e124d",
+        "type": "ui_tab",
+        "name": "Task",
+        "icon": "send",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    }
+]
