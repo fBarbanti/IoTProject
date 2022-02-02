@@ -1,0 +1,12 @@
+0) Riavvia PC
+1) Presentazione
+2) bash startMosquitto
+3) node-red
+4) mosquitto_sub -v -t '#' | xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' -> per vedere tutto
+5) mosquitto_sub -v -t 'task/result' | xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' -> per vedere i risultati
+6) attacca il leader e guarda in 4 se si è connesso
+    - se non si connette inserisci le credenziali
+7) attacca gli edge e guarda se si connettono
+8) su computer di Matteo esegui script latenza (modificando indirizzo Ip dentro)
+9) bash startMultipleClient
+
